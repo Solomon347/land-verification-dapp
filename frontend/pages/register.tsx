@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { connect } from "starknet";
 import Layout from "../components/Layout";
 import { getContract } from "../utils/starknet";
 import { uploadToIPFS } from "../utils/ipfs";
