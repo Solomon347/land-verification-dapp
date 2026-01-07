@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Layout from '../components/Layout';
+import toast from 'react-hot-toast';
 
 export default function Transfer() {
   const [landId, setLandId] = useState('');
@@ -8,15 +9,17 @@ export default function Transfer() {
 
   const transferLand = async () => {
     if (!landId || !newOwner) {
-      alert('Please fill all fields');
+      toast.error('Please fill all fields');
       return;
     }
 
     setLoading(true);
+    const loadingToast = toast.loading('Transferring ownership...');
 
-    // Simulated transfer (in real app, calls blockchain)
+    // Simulated transfer
     setTimeout(() => {
-      alert(`✅ Land ${landId} transferred to ${newOwner}`);
+      toast.dismiss(loadingToast);
+      toast.success(`✅ Land ${landId} transferred to ${newOwner}`);
       setLoading(false);
       setLandId('');
       setNewOwner('');
