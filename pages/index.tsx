@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Layout from '../components/Layout';
+import toast from 'react-hot-toast';
 
 export default function Home() {
   const [landId, setLandId] = useState('');
@@ -8,13 +9,13 @@ export default function Home() {
 
   const verifyLand = async () => {
     if (!landId) {
-      alert('Please enter a Land ID');
+      toast.error('Please enter a Land ID');
       return;
     }
 
     setLoading(true);
     
-    // Simulated verification (in real app, this calls the blockchain)
+    // Simulated verification
     setTimeout(() => {
       setLandInfo({
         owner: '0x1234...5678',
@@ -23,6 +24,7 @@ export default function Home() {
         registered: '2024-12-15'
       });
       setLoading(false);
+      toast.success('✅ Land verified successfully');
     }, 1500);
   };
 
