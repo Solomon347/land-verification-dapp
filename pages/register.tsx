@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import Layout from '../components/Layout';
+import toast from 'react-hot-toast';
 
 export default function Register() {
   const [landId, setLandId] = useState('');
   const [location, setLocation] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -16,23 +16,23 @@ export default function Register() {
 
   const registerLand = async () => {
     if (!landId || !location || !file) {
-      alert('Please fill all fields and upload a document');
+      toast.error('Please fill all fields and upload a document');
       return;
     }
 
     setLoading(true);
+    const loadingToast = toast.loading('Registering land on blockchain...');
 
-    // Simulated registration (in real app, uploads to IPFS then blockchain)
+    // Simulated registration
     setTimeout(() => {
-      setSuccess(true);
+      toast.dismiss(loadingToast);
+      toast.success(`✅ Land ${landId} registered successfully!`);
       setLoading(false);
-      alert(`✅ Land ${landId} registered successfully!`);
       
       // Reset form
       setLandId('');
       setLocation('');
       setFile(null);
-      setSuccess(false);
     }, 2000);
   };
 
@@ -75,12 +75,6 @@ export default function Register() {
           <button onClick={registerLand} disabled={loading} className="button">
             {loading ? 'Registering...' : 'Register Land'}
           </button>
-
-          {success && (
-            <div className="success-message">
-              ✅ Registration successful! Your land is now on the blockchain.
-            </div>
-          )}
         </div>
       </div>
     </Layout>
