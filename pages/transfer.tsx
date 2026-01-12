@@ -64,7 +64,7 @@ export default function Transfer() {
             </div>
           </div>
         </div>
-      </ProtectedRoute>
-    );
-  }
+      </Layout>
+    </ProtectedRoute>
+  );
 }
