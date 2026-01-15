@@ -11,14 +11,18 @@ body {
   color: #333;
 }
 
+/* Navbar */
 .navbar {
   background: white;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .nav-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem;
   display: flex;
@@ -31,10 +35,22 @@ body {
   font-weight: bold;
   color: #667eea;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo-icon {
+  font-size: 1.8rem;
+}
+
+.logo-text {
+  font-size: 1.5rem;
 }
 
 .nav-links {
   display: flex;
+  align-items: center;
   gap: 2rem;
 }
 
@@ -42,6 +58,7 @@ body {
   color: #333;
   text-decoration: none;
   font-weight: 500;
+  font-size: 0.95rem;
   transition: color 0.3s;
 }
 
@@ -49,6 +66,87 @@ body {
   color: #667eea;
 }
 
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 2px solid #e0e0e0;
+}
+
+.user-email {
+  color: #666;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.button-login {
+  padding: 0.5rem 1.2rem;
+  background: transparent;
+  color: #667eea;
+  border: 2px solid #667eea;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.button-login:hover {
+  background: #667eea;
+  color: white;
+}
+
+.button-signup {
+  padding: 0.5rem 1.2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s;
+}
+
+.button-signup:hover {
+  transform: translateY(-2px);
+}
+
+.button-logout {
+  padding: 0.5rem 1.2rem;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.button-logout:hover {
+  background: #dc2626;
+}
+
+/* Hamburger Menu (Mobile) */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: #333;
+  border-radius: 3px;
+  transition: all 0.3s;
+}
+
+/* Main Content */
 .container {
   max-width: 800px;
   margin: 3rem auto;
@@ -189,24 +287,6 @@ label:first-of-type {
   font-size: 0.9rem;
 }
 
-.footer {
-  text-align: center;
-  padding: 2rem;
-  color: white;
-  margin-top: 3rem;
-}
-
-@media (max-width: 768px) {
-  .nav-container {
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
-  h1 {
-    font-size: 2rem;
-  }
-}
-
 /* Authentication Pages */
 .auth-container {
   min-height: 80vh;
@@ -291,17 +371,6 @@ label:first-of-type {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-/* Mobile Responsive */
-@media (max-width: 768px) {
-  .auth-card {
-    padding: 2rem;
-  }
-  
-  .auth-header h1 {
-    font-size: 1.5rem;
-  }
 }
 
 /* Dashboard */
@@ -500,8 +569,201 @@ label:first-of-type {
   margin-bottom: 1.5rem;
 }
 
+/* Footer */
+.footer {
+  background: #1a1a2e;
+  color: white;
+  padding: 3rem 2rem 1rem;
+  margin-top: 5rem;
+}
+
+.footer-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #667eea;
+}
+
+.footer-section h4 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.footer-section p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.footer-section a {
+  display: block;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  transition: color 0.3s;
+}
+
+.footer-section a:hover {
+  color: #667eea;
+}
+
+.footer-bottom {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.footer-bottom p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
+/* Content Pages (About, Terms, etc.) */
+.content-page {
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.content-page h1 {
+  color: white;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.content-page section {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.content-page h2 {
+  color: #667eea;
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.content-page p {
+  color: #333;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+
+.content-page ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.content-page li {
+  color: #333;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  margin-bottom: 0.8rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.content-page li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  color: #10b981;
+  font-weight: bold;
+}
+
+.content-page strong {
+  color: #667eea;
+}
+
+.content-page a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.content-page a:hover {
+  text-decoration: underline;
+}
+
 /* Mobile Responsive */
+@media (max-width: 968px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    background: white;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 2rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transform: translateY(-150%);
+    opacity: 0;
+    transition: all 0.3s;
+    gap: 1rem;
+  }
+
+  .nav-links.open {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .nav-auth {
+    flex-direction: column;
+    align-items: flex-start;
+    border-left: none;
+    border-top: 2px solid #e0e0e0;
+    padding-left: 0;
+    padding-top: 1rem;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .button-login,
+  .button-signup,
+  .button-logout {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 @media (max-width: 768px) {
+  .nav-container {
+    flex-direction: row;
+  }
+  
+  h1 {
+    font-size: 2rem;
+  }
+
+  .auth-card {
+    padding: 2rem;
+  }
+  
+  .auth-header h1 {
+    font-size: 1.5rem;
+  }
+
   .section-header {
     flex-direction: column;
     gap: 1rem;
@@ -518,5 +780,17 @@ label:first-of-type {
   
   .dashboard-header h1 {
     font-size: 2rem;
+  }
+
+  .content-page h1 {
+    font-size: 2rem;
+  }
+
+  .content-page section {
+    padding: 1.5rem;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
   }
 }
