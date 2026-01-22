@@ -1,0 +1,14 @@
+[package]
+name = "land_registry"
+version = "0.1.0"
+edition = "2024_07"
+
+[dependencies]
+starknet = "2.8.2"
+
+[[target.starknet-contract]]
+sierra = true
+casm = true
+
+[scripts]
+test = "scarb cairo-test"
