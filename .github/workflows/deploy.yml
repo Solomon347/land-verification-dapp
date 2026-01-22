@@ -97,32 +97,3 @@ jobs:
               commit_sha: context.sha,
               body: `🚀 **Contract Deployed!**\n\n**Contract Address:** \`${{ steps.deploy.outputs.CONTRACT_ADDRESS }}\`\n**Class Hash:** \`${{ steps.declare.outputs.CLASS_HASH }}\`\n\n[View on Voyager](https://sepolia.voyager.online/contract/${{ steps.deploy.outputs.CONTRACT_ADDRESS }})`
             })
-```
-
-**Commit:** Type: `Add GitHub Actions deployment workflow`
-
----
-
-### **STEP 6: Trigger Deployment**
-
-**Option A: Automatic (when you push contract changes)**
-- Any time you commit changes to `contracts/` folder
-- GitHub Actions runs automatically
-
-**Option B: Manual Trigger**
-1. Go to your repo → Click **"Actions"** tab
-2. Click **"Deploy to Starknet Testnet"** workflow
-3. Click **"Run workflow"** button
-4. Select `main` branch → Click **"Run workflow"**
-
----
-
-### **STEP 7: Watch Deployment Progress**
-
-1. Go to **"Actions"** tab in GitHub
-2. Click on the running workflow
-3. Watch logs in real-time
-4. After 5-10 minutes, you'll see:
-```
-   ✅ Contract declared with class hash: 0x...
-   ✅ Contract deployed at: 0x...
