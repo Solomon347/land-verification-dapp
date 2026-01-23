@@ -1,0 +1,99 @@
+name: Deploy to Starknet Testnet
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'contracts/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Scarb
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://docs.swmansion.com/scarb/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Install Starkli
+        run: |
+          curl https://get.starkli.sh | sh
+          export STARKLI_HOME="$HOME/.starkli"
+          mkdir -p $STARKLI_HOME/bin
+          curl -L https://github.com/xJonathanLEI/starkli/releases/download/v0.3.5/starkli-x86_64-unknown-linux-gnu.tar.gz | tar -xz -C $STARKLI_HOME/bin
+          echo "$STARKLI_HOME/bin" >> $GITHUB_PATH
+
+      - name: Verify installations
+        run: |
+          scarb --version
+          starkli --version
+
+      - name: Build contract
+        run: |
+          cd contracts
+          scarb build
+
+      - name: Setup wallet
+        env:
+          STARKNET_PRIVATE_KEY: ${{ secrets.STARKNET_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.starkli-wallets
+          echo "$STARKNET_PRIVATE_KEY" | starkli signer keystore from-key ~/.starkli-wallets/deployer.json --password ""
+
+      - name: Declare contract
+        id: declare
+        run: |
+          cd contracts
+          CLASS_HASH=$(starkli declare \
+            target/dev/land_registry_LandRegistry.contract_class.json \
+            --rpc https://starknet-sepolia.public.blastapi.io \
+            --account ${{ secrets.STARKNET_ACCOUNT_ADDRESS }} \
+            --keystore ~/.starkli-wallets/deployer.json \
+            --password "" | grep -oP '(?<=Class hash declared: )0x[a-fA-F0-9]+')
+          echo "CLASS_HASH=$CLASS_HASH" >> $GITHUB_OUTPUT
+          echo "Contract declared with class hash: $CLASS_HASH"
+
+      - name: Deploy contract
+        id: deploy
+        run: |
+          CONTRACT_ADDRESS=$(starkli deploy \
+            ${{ steps.declare.outputs.CLASS_HASH }} \
+            --rpc https://starknet-sepolia.public.blastapi.io \
+            --account ${{ secrets.STARKNET_ACCOUNT_ADDRESS }} \
+            --keystore ~/.starkli-wallets/deployer.json \
+            --password "" | grep -oP '(?<=Contract deployed: )0x[a-fA-F0-9]+')
+          echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >> $GITHUB_OUTPUT
+          echo "Contract deployed at: $CONTRACT_ADDRESS"
+
+      - name: Save deployment info
+        run: |
+          mkdir -p deployment
+          echo "# Deployment Information" > deployment/deployment.md
+          echo "" >> deployment/deployment.md
+          echo "**Network:** Starknet Sepolia Testnet" >> deployment/deployment.md
+          echo "**Class Hash:** ${{ steps.declare.outputs.CLASS_HASH }}" >> deployment/deployment.md
+          echo "**Contract Address:** ${{ steps.deploy.outputs.CONTRACT_ADDRESS }}" >> deployment/deployment.md
+          echo "**Deployed:** $(date)" >> deployment/deployment.md
+          echo "" >> deployment/deployment.md
+          echo "View on Voyager: https://sepolia.voyager.online/contract/${{ steps.deploy.outputs.CONTRACT_ADDRESS }}" >> deployment/deployment.md
+
+      - name: Upload deployment info
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-info
+          path: deployment/deployment.md
+
+      - name: Create deployment summary
+        run: |
+          echo "## 🚀 Contract Deployed Successfully!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Contract Address:** \`${{ steps.deploy.outputs.CONTRACT_ADDRESS }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Class Hash:** \`${{ steps.declare.outputs.CLASS_HASH }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[View on Voyager](https://sepolia.voyager.online/contract/${{ steps.deploy.outputs.CONTRACT_ADDRESS }})" >> $GITHUB_STEP_SUMMARY
