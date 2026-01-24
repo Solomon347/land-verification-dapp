@@ -43,30 +43,56 @@ jobs:
           STARKNET_PRIVATE_KEY: ${{ secrets.STARKNET_PRIVATE_KEY }}
         run: |
           mkdir -p ~/.starkli-wallets
-          echo "$STARKNET_PRIVATE_KEY" | starkli signer keystore from-key ~/.starkli-wallets/deployer.json --password ""
+          printf "%s" "$STARKNET_PRIVATE_KEY" > /tmp/private_key.txt
+          starkli signer keystore from-key ~/.starkli-wallets/deployer.json --password "" < /tmp/private_key.txt
+          rm /tmp/private_key.txt
 
       - name: Declare contract
         id: declare
+        env:
+          STARKNET_RPC: https://starknet-sepolia.public.blastapi.io
         run: |
           cd contracts
-          CLASS_HASH=$(starkli declare \
+          OUTPUT=$(starkli declare \
             target/dev/land_registry_LandRegistry.contract_class.json \
-            --rpc https://starknet-sepolia.public.blastapi.io \
+            --rpc $STARKNET_RPC \
             --account ${{ secrets.STARKNET_ACCOUNT_ADDRESS }} \
             --keystore ~/.starkli-wallets/deployer.json \
-            --password "" | grep -oP '(?<=Class hash declared: )0x[a-fA-F0-9]+')
+            --password "")
+          
+          echo "$OUTPUT"
+          
+          CLASS_HASH=$(echo "$OUTPUT" | grep -oP '(?<=Class hash declared: )0x[a-fA-F0-9]+' || echo "$OUTPUT" | grep -oP '0x[a-fA-F0-9]{64}' | head -1)
+          
+          if [ -z "$CLASS_HASH" ]; then
+            echo "Failed to extract class hash"
+            exit 1
+          fi
+          
           echo "CLASS_HASH=$CLASS_HASH" >> $GITHUB_OUTPUT
           echo "Contract declared with class hash: $CLASS_HASH"
 
       - name: Deploy contract
         id: deploy
+        env:
+          STARKNET_RPC: https://starknet-sepolia.public.blastapi.io
         run: |
-          CONTRACT_ADDRESS=$(starkli deploy \
+          OUTPUT=$(starkli deploy \
             ${{ steps.declare.outputs.CLASS_HASH }} \
-            --rpc https://starknet-sepolia.public.blastapi.io \
+            --rpc $STARKNET_RPC \
             --account ${{ secrets.STARKNET_ACCOUNT_ADDRESS }} \
             --keystore ~/.starkli-wallets/deployer.json \
-            --password "" | grep -oP '(?<=Contract deployed: )0x[a-fA-F0-9]+')
+            --password "")
+          
+          echo "$OUTPUT"
+          
+          CONTRACT_ADDRESS=$(echo "$OUTPUT" | grep -oP '(?<=Contract deployed: )0x[a-fA-F0-9]+' || echo "$OUTPUT" | grep -oP '0x[a-fA-F0-9]{64}' | head -1)
+          
+          if [ -z "$CONTRACT_ADDRESS" ]; then
+            echo "Failed to extract contract address"
+            exit 1
+          fi
+          
           echo "CONTRACT_ADDRESS=$CONTRACT_ADDRESS" >> $GITHUB_OUTPUT
           echo "Contract deployed at: $CONTRACT_ADDRESS"
 
