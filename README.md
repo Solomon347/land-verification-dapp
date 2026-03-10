@@ -80,4 +80,4 @@ Before paying for land, a buyer can search the land ID on Terratrust and immedia
 
 ---
 
-© 2025 Terratrust. Built on Starknet.
+© 2026 Terratrust. Built on Starknet.
